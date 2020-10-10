@@ -1,0 +1,17 @@
+{
+    "mode":"voting",
+    "train_data_name": "ratings_train_2019.txt",
+    "test_data_name": "ratings_test_2019.txt",
+    "test_model_path": "CNN-biLSTM",
+    "model_names": ["checkpoint-1172","checkpoint-2344","checkpoint-4148","checkpoint-4585","checkpoint-9170"],
+    "save_file": true,
+    "checkpoint":9170,
+    "epoch":2,
+    "learning_rate":5e-5,
+    "warmup_steps":0,
+    "max_grad_norm":1.0,
+    "batch_size":128,
+    "max_length":60,
+    "num_labels":2,
+    "gradient_accumulation_steps": 1
+}

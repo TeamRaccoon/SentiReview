@@ -2,8 +2,6 @@ import re, os
 import nltk
 from nltk.tokenize import word_tokenize
 
-nltk.download('punkt')
-
 def remove_stopword(stoplist_dir, txt):
     stoplist = []
     with open(os.path.join(stoplist_dir,'Stopwords.txt'),'r',encoding='utf-8') as sw: 

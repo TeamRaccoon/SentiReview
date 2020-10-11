@@ -21,7 +21,7 @@ def predict_line(str):
 
 def load_from_conf():
 
-    with open("conf.json") as f:
+    with open("/home/ubuntu/electra/conf.json") as f:
         conf = json.load(f)
 
     conf["root_dir"] = '/home/ubuntu/electra'

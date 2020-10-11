@@ -12,14 +12,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 
-sys.path.append(os.path.join(os.getcwd(),'transformers'))
+sys.path.append('/home/ubuntu/electra/transformers')
 from activations import get_activation
 from configuration_electra import ElectraConfig
 from tokenization_electra import ElectraTokenizer
 from modeling_electra import ElectraPreTrainedModel, ElectraModel
 from optimization import AdamW, get_linear_schedule_with_warmup
 
-sys.path.append(os.path.join(os.getcwd(),'fine_tuning'))
+sys.path.append('/home/ubuntu/electra/fine_tuning')
 from util import clean_text
 
 

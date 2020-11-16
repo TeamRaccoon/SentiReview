@@ -57,21 +57,12 @@ class ElectraForSequenceClassification(ElectraPreTrainedModel):
         self.init_weights()
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, labels=None):
-        discriminator_hidden_states = self.electra(input_ids, attention_mask, token_type_ids) #12 layer의 모든 output을 다 가져옴
-        #각 layer의 output 조합해서 사용해도 좋음
-        #단, 왠만하면 상위 layer부터 내려가면서 조합!! (맨 위 layer는 포함하면서 내려가기)
-        #output vector = [n, 1024] -> n은 각 문장에서 token 개수, 문장 체크해보고 n의 max 확인해서 그걸로 대치해도 좋은데... nsmc 자체가 짧으니 그냥 써두 될듯!
+        discriminator_hidden_states = self.electra(input_ids, attention_mask, token_type_ids)
 
-        #print(discriminator_hidden_states.shape) #꼭! 찍어보기!!! -> 한 번 꼬이면 노답 ㅠㅠ
+        #print(discriminator_hidden_states.shape) 
 
         # (batch_size, max_length, hidden_size)
-        discriminator_hidden_states = discriminator_hidden_states[0] #맨 위층 layer
-        # layer 작성
-        #output, hidden_state = self.gru()
-        #output: [b, l, 2*512]
-        #hidden_state: [2, b, 512]
-        #print(output.shape)
-        #print(hidden_state.shape)
+        discriminator_hidden_states = discriminator_hidden_states[0] #맨 위층 layer     
 
         # (batch_size, max_length, hidden_size) -> (batch_size, hidden_size)
         lstm_output, (hidden, cell) = self.biLSTM(discriminator_hidden_states)

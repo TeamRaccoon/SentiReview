@@ -42,13 +42,7 @@ class ElectraForSequenceClassification(ElectraPreTrainedModel):
 
         self.softmax = nn.Softmax(dim=-1)
         #layer 선언
-        #ex) [batch, length, hidden] = [128, 50, 1024] 기준
         
-        #self.gru = nn.GRU(input_size=config.hidden_size(=1024, 위층 layer(여기서는 gru)의 각 내부 layer의 unit 크기), hidden_size=512, num_layers=2(조교님은 1~2 추천, layer 수에 따른 성능 변화?), dropout=dropout, batch_first=True, bidirectional=True)
-        #bi-RNN같이 양방향은 [b, l, h]을 input으로 넣으면 [b, l, 2*h]가 output -> 각 방향에서의 output인 h 2개를 concat
-        #hidden_state: [b, h] -> 각 방향마다 [2(양방향), b, h]가 output으로 나오고 두개를 쪼개서 concat
-        #tensorflow output: [batch, step, hidden], torch output: [step, batch, hidden] -> torch 순서가 우리가 일반적으로 아는거랑 달라!!! -> batch_first=True를 해서 [batch, step, hidden]으로 형태 바꿔줌
-
         num_filter=16
         kernel_size_ls = [3,4,5]
         self.CNN = nn.ModuleList([nn.Conv2d(1, num_filter, (kernel_size, config.hidden_size)) for kernel_size in kernel_size_ls])
@@ -232,9 +226,7 @@ def do_train(config, electra_model, optimizer, scheduler, train_dataloader, epoc
         total_predicts += predicts
         total_corrects += labels
 
-        #BERT -> parameter가 많아서 batch size를 크게는 못돌림, 학습에 최적화된 batch size = 32~256
-        #만약 batch size가 16일 때, accumulation step을 256으로 하면 실제 batch size는 16이지만 256으로 돌린 것 같은 유사한 효과
-        #layer 더 쌓을때는 batch_size = 32, 64 정도로 해놓고 accumulation을 조정 -> 1:32, 2:64, ... 이런 식으로 조정
+
         if config["gradient_accumulation_steps"] > 1:
             loss = loss / config["gradient_accumulation_steps"]
 
@@ -292,7 +284,7 @@ def do_evaluate(electra_model, test_dataloader, mode):
 
 
 def train(config):
-    # electra config 객체 생성 #layer 계속 쌓을거니까 base로 바꾸고 batch size 줄이고 accumulation 높이면 좋을듯
+    # electra config 객체 생성
     electra_config = ElectraConfig.from_pretrained(config["train_model_path"], num_labels=config["num_labels"], cache_dir=config["cache_dir_path"])
     
     # electra tokenizer 객체 생성

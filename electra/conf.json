@@ -3,7 +3,7 @@
     "train_data_name": "ratings_train_2019.txt",
     "test_data_name": "ratings_test_2019.txt",
     "test_model_path": "CNN-biLSTM",
-    "model_names": ["checkpoint-7032","checkpoint-4148","checkpoint-5164","checkpoint-10538","checkpoint-28128"],
+    "model_names": {"nsmc":"checkpoint-7032","neu":"checkpoint-4148","normal":"checkpoint-5164","daum":"checkpoint-10538"},
     "save_file": true,
     "checkpoint":9170,
     "epoch":2,

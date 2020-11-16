@@ -21,7 +21,8 @@ from optimization import AdamW, get_linear_schedule_with_warmup
 
 sys.path.append('/home/ubuntu/electra/fine_tuning')
 from util import clean_text
-
+from hanspell import spell_checker
+import re
 
 #electra: base 기준 12 layers
 class ElectraForSequenceClassification(ElectraPreTrainedModel):
@@ -177,6 +178,36 @@ def convert_data2dataset(datas, tokenizer, max_length):
     dataset = TensorDataset(total_input_ids, total_attention_mask, total_token_type_ids, total_labels)
 
     return dataset
+
+def check_hanspell(dataset):
+    fails, checked_data = [], []
+
+    for id, sequence, label in dataset:
+        sequence = re.sub('[-&]', '', sequence)
+        try:
+             checked = spell_checker.check(sequence)
+             checked_sequence = checked.checked
+             checked_data.append((id, checked_sequence,label))
+        except Exception:
+             fails.append(id)
+             checked_data.append((id, sequence, label))
+
+    re_checked = []
+    for id, sequence, label in checked_data:
+        if id in fails:
+           try:
+               checked = spell_checker.check(sequence)
+               checked_sequence = checked.checked
+               re_checked.append((id, checked_sequence, label))
+           except:
+               print(id)
+               re_checked.append((id, sequence, label))
+        else:
+           re_checked.append((id, sequence, label))
+
+    checked_tata = re_checked
+
+    return checked_data
 
 def do_train(config, electra_model, optimizer, scheduler, train_dataloader, epoch, global_step):
 
@@ -433,7 +464,12 @@ def test(config):
     show_result(w_id, w_pred, w_corr, electra_tokenizer, config["save_file"])
 
 def eval_from_model(config, model_name, dataset):
-     # model name에 따라 electra 객체 생성 > 정확도와 label(정답)리스트 리턴
+    # model name에 따라 electra 객체 생성 > 정확도와 label(정답)리스트 리턴
+    if (isinstance(model_name, dict)):
+        if (model_name.key() == "nsmc")
+            dataset = check_hanspell(dataset)
+        _, model_name = model_name
+
     path = os.path.join(config["test_model_path"],model_name)
 
     # electra config 객체 생성
@@ -470,8 +506,9 @@ def vote(config,dataset):
     predict_labels = []
     model_names = config['model_names']
 
-    for name in model_names:
-        acc, predicts = eval_from_model(config,name,dataset)
+    # names = dict(model_type, model_name(path_name))
+    for names in model_names.items():
+        acc, predicts = eval_from_model(config,names,dataset)
 
         print('accuracy: ',acc)
         predict_labels.append(predicts)
